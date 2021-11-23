@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "DPreferenceDemo"
+    },
+    {
+      "name": "action_settings",
+      "value": "Settings"
+    },
+    {
+      "name": "entry_MainAbility",
+      "value": "DPreference Sample"
+    },
+    {
+      "name": "mainability_description",
+      "value": "DPreference Ability"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package ledongli.dpreference;
+package ledongli.safepreference;
 
 import org.junit.Test;
 

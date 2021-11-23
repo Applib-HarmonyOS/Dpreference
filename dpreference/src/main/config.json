@@ -1,0 +1,34 @@
+{
+  "app": {
+    "bundleName": "me.dozen.dpreference",
+    "vendor": "dpreference",
+    "version": {
+      "code": 1000000,
+      "name": "1.0.0"
+    }
+  },
+  "deviceConfig": {
+  },
+  "module": {
+    "package": "me.dozen.dpreference",
+    "deviceType": [
+      "phone",
+      "tablet",
+      "tv"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "dpreference",
+      "moduleType": "har"
+    },
+    "abilities": [
+      {
+        "name": "me.dozen.dpreference.PreferenceProvider",
+        "description": "Test provider",
+        "type": "data",
+        "visible": true,
+        "uri": "dataability://me.dozen.dpreference.PreferenceProvider"
+      }
+    ]
+  }
+}
