@@ -9,6 +9,7 @@ Inspired by [Dozen Wang/DPreference](https://github.com/DozenWang/DPreference)
 2. Similar API like Preferences.
 3. DPreference is just a wrapper of original Preferences with data Ability.
 
+<img src="screenshots/DPreferenceGif.gif" width="500">
 
 ## Dependency
 1. For using dpreference module in sample app, include the source code and add the below dependencies in entry/build.gradle to generate hap/support.har.

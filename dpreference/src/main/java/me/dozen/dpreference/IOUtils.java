@@ -3,7 +3,6 @@ package me.dozen.dpreference;
 import ohos.data.resultset.ResultSet;
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +13,7 @@ final class IOUtils {
     // NOTE: This class is focussed on InputStream, OutputStream, Reader and
     // Writer. Each method should take at least one of these as a parameter,
     // or return one of them.
+
     private IOUtils() {
         throw new IllegalStateException("Utility class");
     }

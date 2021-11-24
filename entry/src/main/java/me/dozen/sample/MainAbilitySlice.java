@@ -33,7 +33,7 @@ public class MainAbilitySlice extends AbilitySlice {
         testButton.setClickedListener(new Component.ClickedListener() {
             @Override
             public void onClick(Component view) {
-                Test.testDPreference(getContext());
+                Test.testDpreference(getContext());
             }
         });
     }

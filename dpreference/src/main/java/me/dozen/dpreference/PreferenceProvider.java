@@ -8,9 +8,10 @@ import ohos.data.dataability.DataAbilityPredicates;
 import ohos.data.rdb.ValuesBucket;
 import ohos.data.resultset.ResultSet;
 import ohos.data.resultset.TableResultSet;
+import ohos.hiviewdfx.HiLog;
+import ohos.hiviewdfx.HiLogLabel;
 import ohos.utils.LightweightMap;
 import ohos.utils.net.Uri;
-import com.hmos.compat.util.Log;
 import java.util.Map;
 
 /**
@@ -31,7 +32,9 @@ public class PreferenceProvider extends Ability {
     public static final int PREF_STRING = 2;
     public static final int PREF_INT = 3;
     public static final int PREF_LONG = 4;
+    public static final HiLogLabel HI_LOG_LABEL_2 = new HiLogLabel(0, 0, TAG);
     private static final PathMatcher sUriMatcher = new PathMatcher();
+
     static {
         sUriMatcher.addPath("boolean/*/*", PREF_BOOLEAN);
         sUriMatcher.addPath("string/*/*", PREF_STRING);
@@ -122,7 +125,7 @@ public class PreferenceProvider extends Ability {
     public int update(Uri uri, ValuesBucket values, DataAbilityPredicates predicates) {
         PrefModel model = getPrefModelByUri(uri);
         String lastPath = PreferenceProvider.changeParamToPath(uri);
-        Log.d(TAG, "lastPath " + lastPath);
+        HiLog.debug(HI_LOG_LABEL_2, "lastPath " + lastPath);
         switch (getPathId(uri.toString())) {
             case PREF_BOOLEAN:
                 persistBoolean(model.getName(), values);
@@ -204,8 +207,8 @@ public class PreferenceProvider extends Ability {
         if (uri == null) {
             throw new IllegalArgumentException("getPrefModelByUri uri is null : " + uri);
         }
-        Log.d("PreferenceProvider", "" + uri.getDecodedPathList().size());
-        uri.getDecodedPathList().forEach(u -> Log.d("PreferenceProvider", "item: " + u));
+        HiLog.debug(HI_LOG_LABEL_2, "PreferenceProvider", "" + uri.getDecodedPathList().size());
+        uri.getDecodedPathList().forEach(u -> HiLog.debug(HI_LOG_LABEL_2, "PreferenceProvider", "item: " + u));
         if (uri.getDecodedPathList().size() != 4) {
             throw new IllegalArgumentException("getPrefModelByUri uri is wrong : " + uri);
         }
