@@ -6,7 +6,7 @@ import ohos.hiviewdfx.HiLogLabel;
 import me.dozen.dpreference.DPreference;
 
 /**
- * Created by wangyida on 15/12/18.
+ * This is a Test class.
  */
 public class Test {
     private static final String TESTPREF = "testPref";

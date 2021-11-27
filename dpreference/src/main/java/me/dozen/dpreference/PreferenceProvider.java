@@ -32,7 +32,7 @@ public class PreferenceProvider extends Ability {
     public static final int PREF_STRING = 2;
     public static final int PREF_INT = 3;
     public static final int PREF_LONG = 4;
-    public static final HiLogLabel HI_LOG_LABEL_2 = new HiLogLabel(0, 0, TAG);
+    private static final HiLogLabel HI_LOG_LABEL = new HiLogLabel(0, 0, TAG);
     private static final PathMatcher sUriMatcher = new PathMatcher();
 
     static {
@@ -66,32 +66,36 @@ public class PreferenceProvider extends Ability {
     @Override
     public ResultSet query(Uri uri, String[] projection, DataAbilityPredicates predicates) {
         TableResultSet cursor = null;
-        PrefModel model = getPrefModelByUri(uri);
-        String lastPath = PreferenceProvider.changeParamToPath(uri);
-        switch (getPathId(lastPath)) {
-            case PREF_BOOLEAN:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName())
-                            .getPrefBoolean(model.getKey(), false) ? 1 : 0);
-                }
-                break;
-            case PREF_STRING:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefString(model.getKey(), ""));
-                }
-                break;
-            case PREF_INT:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefInt(model.getKey(), -1));
-                }
-                break;
-            case PREF_LONG:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefLong(model.getKey(), -1));
-                }
-                break;
-            default:
-                // do nothing
+        try {
+            PrefModel model = getPrefModelByUri(uri);
+            String lastPath = PreferenceProvider.changeParamToPath(uri);
+            switch (getPathId(lastPath)) {
+                case PREF_BOOLEAN:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName())
+                                .getPrefBoolean(model.getKey(), false) ? 1 : 0);
+                    }
+                    break;
+                case PREF_STRING:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefString(model.getKey(), ""));
+                    }
+                    break;
+                case PREF_INT:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefInt(model.getKey(), -1));
+                    }
+                    break;
+                case PREF_LONG:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefLong(model.getKey(), -1));
+                    }
+                    break;
+                default:
+                    // do nothing
+            }
+        } catch (IllegalArgumentException e) {
+            HiLog.error(HI_LOG_LABEL, "IllegalArgumentException in ResultSet Query");
         }
         return cursor;
     }
@@ -114,6 +118,10 @@ public class PreferenceProvider extends Ability {
             case PREF_LONG:
             case PREF_STRING:
             case PREF_INT:
+                PrefModel model = getPrefModelByUri(uri);
+                if (model != null) {
+                    getDPreference(model.getName()).removePreference(model.getKey());
+                }
                 break;
             default:
                 throw new IllegalStateException(" unsupported uri : " + uri);
@@ -123,24 +131,28 @@ public class PreferenceProvider extends Ability {
 
     @Override
     public int update(Uri uri, ValuesBucket values, DataAbilityPredicates predicates) {
-        PrefModel model = getPrefModelByUri(uri);
-        String lastPath = PreferenceProvider.changeParamToPath(uri);
-        HiLog.debug(HI_LOG_LABEL_2, "lastPath " + lastPath);
-        switch (getPathId(uri.toString())) {
-            case PREF_BOOLEAN:
-                persistBoolean(model.getName(), values);
-                break;
-            case PREF_LONG:
-                persistLong(model.getName(), values);
-                break;
-            case PREF_STRING:
-                persistString(model.getName(), values);
-                break;
-            case PREF_INT:
-                persistInt(model.getName(), values);
-                break;
-            default:
-                throw new IllegalStateException("update unsupported uri : " + uri);
+        try {
+            PrefModel model = getPrefModelByUri(uri);
+            String lastPath = PreferenceProvider.changeParamToPath(uri);
+            HiLog.debug(HI_LOG_LABEL, "lastPath " + lastPath);
+            switch (getPathId(uri.toString())) {
+                case PREF_BOOLEAN:
+                    persistBoolean(model.getName(), values);
+                    break;
+                case PREF_LONG:
+                    persistLong(model.getName(), values);
+                    break;
+                case PREF_STRING:
+                    persistString(model.getName(), values);
+                    break;
+                case PREF_INT:
+                    persistInt(model.getName(), values);
+                    break;
+                default:
+                    throw new IllegalStateException("update unsupported uri : " + uri);
+            }
+        } catch (IllegalArgumentException e) {
+            HiLog.error(HI_LOG_LABEL, "IllegalArgumentException in update");
         }
         return 0;
     }
@@ -207,8 +219,8 @@ public class PreferenceProvider extends Ability {
         if (uri == null) {
             throw new IllegalArgumentException("getPrefModelByUri uri is null : " + uri);
         }
-        HiLog.debug(HI_LOG_LABEL_2, "PreferenceProvider", "" + uri.getDecodedPathList().size());
-        uri.getDecodedPathList().forEach(u -> HiLog.debug(HI_LOG_LABEL_2, "PreferenceProvider", "item: " + u));
+        HiLog.debug(HI_LOG_LABEL, "PreferenceProvider", "" + uri.getDecodedPathList().size());
+        uri.getDecodedPathList().forEach(u -> HiLog.debug(HI_LOG_LABEL, "PreferenceProvider", "item: " + u));
         if (uri.getDecodedPathList().size() != 4) {
             throw new IllegalArgumentException("getPrefModelByUri uri is wrong : " + uri);
         }

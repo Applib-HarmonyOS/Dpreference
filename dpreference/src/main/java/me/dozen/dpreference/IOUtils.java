@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 final class IOUtils {
-    private static final HiLogLabel HILOG_LABEL_1 = new HiLogLabel(0, 0, "ioutils");
+    private static final HiLogLabel HILOG_LABEL = new HiLogLabel(0, 0, "ioutils");
     // NOTE: This class is focussed on InputStream, OutputStream, Reader and
     // Writer. Each method should take at least one of these as a parameter,
     // or return one of them.
@@ -23,7 +23,7 @@ final class IOUtils {
             try {
                 is.close();
             } catch (IOException e) {
-                HiLog.error(HILOG_LABEL_1, "IOException in closeQuietly when the parameter: is");
+                HiLog.error(HILOG_LABEL, "IOException in closeQuietly when the parameter: is");
             }
         }
     }
@@ -33,7 +33,7 @@ final class IOUtils {
             try {
                 os.close();
             } catch (IOException e) {
-                HiLog.error(HILOG_LABEL_1, "closeQuietly IOException - parameter: os");
+                HiLog.error(HILOG_LABEL, "closeQuietly IOException - parameter: os");
             }
         }
     }
@@ -43,7 +43,7 @@ final class IOUtils {
             try {
                 r.close();
             } catch (IOException e) {
-                HiLog.error(HILOG_LABEL_1, "IOException for closeQuietly - parameter: r");
+                HiLog.error(HILOG_LABEL, "IOException for closeQuietly - parameter: r");
             }
         }
     }

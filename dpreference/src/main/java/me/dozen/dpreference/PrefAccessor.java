@@ -118,7 +118,7 @@ class PrefAccessor {
         try {
             DataAbilityHelper.creator(context).update(uri, cv, dataAbilityPredicates);
         } catch (DataAbilityRemoteException e) {
-            HiLog.error(HILOG_LABEL, "exception in getIntFromAttr");
+            HiLog.error(HILOG_LABEL, "exception in setString");
         }
     }
 
