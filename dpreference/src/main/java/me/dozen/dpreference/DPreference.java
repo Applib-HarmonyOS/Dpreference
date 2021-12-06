@@ -1,17 +1,14 @@
 package me.dozen.dpreference;
 
-
-import android.content.Context;
+import ohos.app.Context;
 
 /**
  * Created by wangyida on 15-4-9.
  */
 public class DPreference {
-
     Context mContext;
-
     /**
-     * preference file name
+     * preference file name.
      */
     String mName;
 
@@ -58,5 +55,4 @@ public class DPreference {
     public void removePreference(final String key) {
         PrefAccessor.remove(mContext, mName, key);
     }
-
 }

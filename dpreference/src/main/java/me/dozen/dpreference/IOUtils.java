@@ -1,42 +1,29 @@
 package me.dozen.dpreference;
 
-
-import android.database.Cursor;
-import android.text.TextUtils;
-import android.util.Log;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
+import ohos.data.resultset.ResultSet;
+import ohos.hiviewdfx.HiLog;
+import ohos.hiviewdfx.HiLogLabel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 final class IOUtils {
-
+    private static final HiLogLabel HILOG_LABEL = new HiLogLabel(0, 0, "ioutils");
     // NOTE: This class is focussed on InputStream, OutputStream, Reader and
     // Writer. Each method should take at least one of these as a parameter,
     // or return one of them.
 
-    private static final int EOF = -1;
-
-    /**
-     * The default buffer size ({@value}) to use for {@link
-     * #copyLarge(java.io.InputStream, java.io.OutputStream)} and {@link
-     */
-    private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private IOUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void closeQuietly(InputStream is) {
         if (is != null) {
             try {
                 is.close();
             } catch (IOException e) {
-                // ignore
+                HiLog.error(HILOG_LABEL, "IOException in closeQuietly when the parameter: is");
             }
         }
     }
@@ -46,7 +33,7 @@ final class IOUtils {
             try {
                 os.close();
             } catch (IOException e) {
-                // ignore
+                HiLog.error(HILOG_LABEL, "closeQuietly IOException - parameter: os");
             }
         }
     }
@@ -56,16 +43,14 @@ final class IOUtils {
             try {
                 r.close();
             } catch (IOException e) {
-                // ignore
+                HiLog.error(HILOG_LABEL, "IOException for closeQuietly - parameter: r");
             }
         }
     }
 
-    public static void closeQuietly(Cursor cursor) {
+    public static void closeQuietly(ResultSet cursor) {
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
     }
-
-
 }

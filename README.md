@@ -1,37 +1,41 @@
-### DPreference
-If you have used SharePreference's MULTI_PROCESS_MODE, you may know that it's not reliable.
+# DPreference
+A HMOS library for DPreference.
 
-See the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen one of these warnings:
->Note: currently this class does not support use across multiple processes. This will be added later.
+# Source
+Inspired by [Dozen Wang/DPreference](https://github.com/DozenWang/DPreference)
 
-Google even deprecated the multiprocess support because it never worked relieable
+## Features
+1. Works multiprocess safely.
+2. Similar API like Preferences.
+3. DPreference is just a wrapper of original Preferences with data Ability.
 
-[![](https://cloud.githubusercontent.com/assets/1096485/9793296/110575d2-57e5-11e5-9728-34d3597771b8.png)](http://developer.android.com/reference/android/content/Context.html#MODE_MULTI_PROCESS)
+<img src="screenshots/DPreferenceGif.gif" width="500">
 
-DPreference is a way solving this problem powered by a ContentProvider. It works in multiple processed mode safely. You can declare your provider in a remote process, if you don't declare it in AndroidManifest.xml, it is operating in main process by default.
-
-####Features
-- **works multiprocess safely**
-- the same api like SharePreference
-- compat old app versions, don't need to upgrade.
-  DPreference is just a wrapper of original sharepreference with contentprovider.
-
-####Usage
+## Dependency
+1. For using dpreference module in sample app, include the source code and add the below dependencies in entry/build.gradle to generate hap/support.har.
+```groovy
+    dependencies {
+        implementation fileTree(dir: 'libs', include: ['*.jar', '*.har'])
+        implementation project(path: ':dpreference')
+        testImplementation 'junit:junit:4.13'
+        ohosTestImplementation 'com.huawei.ohos.testkit:runner:1.0.0.100'
+    }
 ```
-       DPreference dPreference = new DPreference(context, "default");
-       dPreference.setPrefString( "key", "value");
-
+2. For using dpreference in separate application using har file, add the har file in the entry/libs folder and add the dependencies in entry/build.gradle file.
+```groovy
+	dependencies {
+		implementation fileTree(dir: 'libs', include: ['*.har'])
+		testImplementation 'junit:junit:4.13'
+	}
 ```
-####Compare With Tray(https://github.com/grandcentrix/tray/)
-- **DPreference** 
-    `setString` called 1000 times cost : 375 ms
-    `getString` called 1000 times cost : 186 ms
-- **Tray** 
-    `setString` called 1000 times cost : 13699 ms 
-    `getString` called 1000  times cost : 3496 ms
 
-####So DPreference has a better performance.
+## Usage
+```java
+    DPreference dPreference = new DPreference(context, "default");
+    dPreference.setPrefString( "key", "value");
+    dPreference.getPrefString("key", "defaultValue");
+```
 
+                                                                                          
+                                                  
 
-  
-  

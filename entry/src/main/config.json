@@ -1,0 +1,48 @@
+{
+  "app": {
+    "bundleName": "me.dozen.sample",
+    "vendor": "dpreference",
+    "version": {
+      "code": 1000000,
+      "name": "1.0.0"
+    }
+  },
+  "deviceConfig": {},
+  "module": {
+    "package": "me.dozen.sample",
+    "name": ".MyApplication",
+    "mainAbility": "me.dozen.sample.MainAbility",
+    "deviceType": [
+      "phone",
+      "tablet",
+      "tv"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "entry",
+      "moduleType": "entry",
+      "installationFree": true
+    },
+    "abilities": [
+      {
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "orientation": "unspecified",
+        "name": "me.dozen.sample.MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:app_name",
+        "label": "$string:action_settings",
+        "type": "page",
+        "launchType": "standard"
+      }
+    ]
+  }
+}

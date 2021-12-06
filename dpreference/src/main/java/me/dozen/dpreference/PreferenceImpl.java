@@ -1,15 +1,14 @@
 package me.dozen.dpreference;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import ohos.app.Context;
+import ohos.data.DatabaseHelper;
+import ohos.data.preferences.Preferences;
 
 /**
  * Created by wangyida on 15/12/18.
  */
 class PreferenceImpl implements IPrefImpl {
-
     private Context mContext;
-
     private String mPrefName;
 
     public PreferenceImpl(Context context, String prefName) {
@@ -17,101 +16,96 @@ class PreferenceImpl implements IPrefImpl {
         mPrefName = prefName;
     }
 
-    public String getPrefString(final String key,
-                                final String defaultValue) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+    public String getPrefString(final String key, final String defaultValue) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         return settings.getString(key, defaultValue);
     }
 
     public void setPrefString(final String key, final String value) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        settings.edit().putString(key, value).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
+        settings.putString(key, value).flush();
     }
 
-    public boolean getPrefBoolean(final String key,
-                                  final boolean defaultValue) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+    public boolean getPrefBoolean(final String key, final boolean defaultValue) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         return settings.getBoolean(key, defaultValue);
     }
 
     public boolean hasKey(final String key) {
-        return mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE)
-                .contains(key);
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        return databaseHelper.getPreferences(mPrefName).hasKey(key);
     }
 
     public void setPrefBoolean(final String key, final boolean value) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        settings.edit().putBoolean(key, value).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
+        settings.putBoolean(key, value).flush();
     }
 
     public void setPrefInt(final String key, final int value) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        settings.edit().putInt(key, value).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
+        settings.putInt(key, value).flush();
     }
 
     public void increasePrefInt(final String key) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         increasePrefInt(settings, key);
     }
 
-    public void increasePrefInt(final SharedPreferences sp, final String key) {
+    public void increasePrefInt(final Preferences sp, final String key) {
         final int v = sp.getInt(key, 0) + 1;
-        sp.edit().putInt(key, v).apply();
+        sp.putInt(key, v).flush();
     }
 
-    public void increasePrefInt(final SharedPreferences sp, final String key,
-                                final int increment) {
+    public void increasePrefInt(final Preferences sp, final String key, final int increment) {
         final int v = sp.getInt(key, 0) + increment;
-        sp.edit().putInt(key, v).apply();
+        sp.putInt(key, v).flush();
     }
 
     public int getPrefInt(final String key, final int defaultValue) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         return settings.getInt(key, defaultValue);
     }
 
     public void setPrefFloat(final String key, final float value) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        settings.edit().putFloat(key, value).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
+        settings.putFloat(key, value).flush();
     }
 
     public float getPrefFloat(final String key, final float defaultValue) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         return settings.getFloat(key, defaultValue);
     }
 
     public void setPrefLong(final String key, final long value) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        settings.edit().putLong(key, value).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
+        settings.putLong(key, value).flush();
     }
 
     public long getPrefLong(final String key, final long defaultValue) {
-        final SharedPreferences settings =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences settings = databaseHelper.getPreferences(mPrefName);
         return settings.getLong(key, defaultValue);
     }
 
-
     public void removePreference(final String key) {
-        final SharedPreferences prefs =
-                mContext.getSharedPreferences(mPrefName, Context.MODE_PRIVATE);
-        prefs.edit().remove(key).apply();
+        DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+        final Preferences prefs = databaseHelper.getPreferences(mPrefName);
+        prefs.delete(key).flush();
     }
 
-    public void clearPreference(final SharedPreferences p) {
-        final SharedPreferences.Editor editor = p.edit();
+    public void clearPreference(final Preferences p) {
+        final Preferences editor = p;
         editor.clear();
-        editor.apply();
+        editor.flush();
     }
-
 }

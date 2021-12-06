@@ -1,103 +1,119 @@
 package me.dozen.dpreference;
 
-import android.content.ContentProvider;
-import android.content.ContentValues;
-import android.content.UriMatcher;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
-import android.text.TextUtils;
-import android.util.Log;
-
-import java.util.List;
+import ohos.aafwk.ability.Ability;
+import ohos.aafwk.ability.PathMatcher;
+import ohos.aafwk.content.Intent;
+import ohos.agp.utils.TextTool;
+import ohos.data.dataability.DataAbilityPredicates;
+import ohos.data.rdb.ValuesBucket;
+import ohos.data.resultset.ResultSet;
+import ohos.data.resultset.TableResultSet;
+import ohos.hiviewdfx.HiLog;
+import ohos.hiviewdfx.HiLogLabel;
+import ohos.utils.LightweightMap;
+import ohos.utils.net.Uri;
 import java.util.Map;
 
 /**
  * Created by wangyida on 15/12/18.
  */
-public class PreferenceProvider extends ContentProvider {
-
+public class PreferenceProvider extends Ability {
     private static final String TAG = PreferenceProvider.class.getSimpleName();
-
     private static final String AUTHORITY = "me.dozen.dpreference.PreferenceProvider";
-
-    public static final String CONTENT_PREF_BOOLEAN_URI = "content://" + AUTHORITY + "/boolean/";
-    public static final String CONTENT_PREF_STRING_URI = "content://" + AUTHORITY + "/string/";
-    public static final String CONTENT_PREF_INT_URI = "content://" + AUTHORITY + "/integer/";
-    public static final String CONTENT_PREF_LONG_URI = "content://" + AUTHORITY + "/long/";
-
-
+    private static final String ACTION = "values is null!!!";
+    private static final String DATA_ABILITY = "dataability:///";
+    public static final String CONTENT_PREF_BOOLEAN_URI =  DATA_ABILITY + AUTHORITY + "/boolean/";
+    public static final String CONTENT_PREF_STRING_URI =  DATA_ABILITY + AUTHORITY + "/string/";
+    public static final String CONTENT_PREF_INT_URI =  DATA_ABILITY + AUTHORITY + "/integer/";
+    public static final String CONTENT_PREF_LONG_URI =  DATA_ABILITY + AUTHORITY + "/long/";
     public static final String PREF_KEY = "key";
     public static final String PREF_VALUE = "value";
-
     public static final int PREF_BOOLEAN = 1;
     public static final int PREF_STRING = 2;
     public static final int PREF_INT = 3;
     public static final int PREF_LONG = 4;
-
-    private static final UriMatcher sUriMatcher;
+    private static final HiLogLabel HI_LOG_LABEL = new HiLogLabel(0, 0, TAG);
+    private static final PathMatcher sUriMatcher = new PathMatcher();
 
     static {
-        sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, "boolean/*/*", PREF_BOOLEAN);
-        sUriMatcher.addURI(AUTHORITY, "string/*/*", PREF_STRING);
-        sUriMatcher.addURI(AUTHORITY, "integer/*/*", PREF_INT);
-        sUriMatcher.addURI(AUTHORITY, "long/*/*", PREF_LONG);
-
+        sUriMatcher.addPath("boolean/*/*", PREF_BOOLEAN);
+        sUriMatcher.addPath("string/*/*", PREF_STRING);
+        sUriMatcher.addPath("integer/*/*", PREF_INT);
+        sUriMatcher.addPath("long/*/*", PREF_LONG);
     }
 
     @Override
-    public boolean onCreate() {
-        return true;
+    public void onStart(Intent intent) {
+        // empty method.
     }
 
-    @Nullable
+    private int getPathId(String path) {
+        if (path == null) {
+            return -1;
+        }
+        if (path.contains("/boolean/")) {
+            return PREF_BOOLEAN;
+        } else if (path.contains("/string/")) {
+            return PREF_STRING;
+        } else if (path.contains("/integer/")) {
+            return PREF_INT;
+        } else if (path.contains("/long/")) {
+            return PREF_LONG;
+        }
+        return -1;
+    }
+
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        MatrixCursor cursor = null;
-        PrefModel model = getPrefModelByUri(uri);
-        switch (sUriMatcher.match(uri)) {
-            case PREF_BOOLEAN:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefBoolean(model.getKey(), false) ? 1 : 0);
-                }
-                break;
-            case PREF_STRING:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefString(model.getKey(), ""));
-                }
-                break;
-            case PREF_INT:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefInt(model.getKey(), -1));
-                }
-                break;
-            case PREF_LONG:
-                if (getDPreference(model.getName()).hasKey(model.getKey())) {
-                    cursor = preferenceToCursor(getDPreference(model.getName()).getPrefLong(model.getKey(), -1));
-                }
-                break;
+    public ResultSet query(Uri uri, String[] projection, DataAbilityPredicates predicates) {
+        TableResultSet cursor = null;
+        try {
+            PrefModel model = getPrefModelByUri(uri);
+            String lastPath = PreferenceProvider.changeParamToPath(uri);
+            switch (getPathId(lastPath)) {
+                case PREF_BOOLEAN:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName())
+                                .getPrefBoolean(model.getKey(), false) ? 1 : 0);
+                    }
+                    break;
+                case PREF_STRING:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefString(model.getKey(), ""));
+                    }
+                    break;
+                case PREF_INT:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefInt(model.getKey(), -1));
+                    }
+                    break;
+                case PREF_LONG:
+                    if (getDPreference(model.getName()).hasKey(model.getKey())) {
+                        cursor = preferenceToCursor(getDPreference(model.getName()).getPrefLong(model.getKey(), -1));
+                    }
+                    break;
+                default:
+                    // do nothing
+            }
+        } catch (IllegalArgumentException e) {
+            HiLog.error(HI_LOG_LABEL, "IllegalArgumentException in ResultSet Query");
         }
         return cursor;
     }
 
-    @Nullable
     @Override
     public String getType(Uri uri) {
         return null;
     }
 
-    @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public int insert(Uri uri, ValuesBucket values) {
         throw new IllegalStateException("insert unsupport!!!");
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        switch (sUriMatcher.match(uri)) {
+    public int delete(Uri uri, DataAbilityPredicates predicates) {
+        String lastPath = PreferenceProvider.changeParamToPath(uri);
+        switch (getPathId(lastPath)) {
             case PREF_BOOLEAN:
             case PREF_LONG:
             case PREF_STRING:
@@ -114,79 +130,82 @@ public class PreferenceProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        PrefModel model = getPrefModelByUri(uri);
-        if(model == null) {
-            throw new IllegalArgumentException("update prefModel is null");
-        }
-        switch (sUriMatcher.match(uri)) {
-            case PREF_BOOLEAN:
-                persistBoolean(model.getName(), values);
-                break;
-            case PREF_LONG:
-                persistLong(model.getName(), values);
-                break;
-            case PREF_STRING:
-                persistString(model.getName(), values);
-                break;
-            case PREF_INT:
-                persistInt(model.getName(), values);
-                break;
-            default:
-                throw new IllegalStateException("update unsupported uri : " + uri);
+    public int update(Uri uri, ValuesBucket values, DataAbilityPredicates predicates) {
+        try {
+            PrefModel model = getPrefModelByUri(uri);
+            String lastPath = PreferenceProvider.changeParamToPath(uri);
+            HiLog.debug(HI_LOG_LABEL, "lastPath " + lastPath);
+            switch (getPathId(uri.toString())) {
+                case PREF_BOOLEAN:
+                    persistBoolean(model.getName(), values);
+                    break;
+                case PREF_LONG:
+                    persistLong(model.getName(), values);
+                    break;
+                case PREF_STRING:
+                    persistString(model.getName(), values);
+                    break;
+                case PREF_INT:
+                    persistInt(model.getName(), values);
+                    break;
+                default:
+                    throw new IllegalStateException("update unsupported uri : " + uri);
+            }
+        } catch (IllegalArgumentException e) {
+            HiLog.error(HI_LOG_LABEL, "IllegalArgumentException in update");
         }
         return 0;
     }
 
-    private static String[] PREFERENCE_COLUMNS = {PREF_VALUE};
+    private static String[] preferencecolumns = { PREF_VALUE };
 
-    private <T> MatrixCursor preferenceToCursor(T value) {
-        MatrixCursor matrixCursor = new MatrixCursor(PREFERENCE_COLUMNS, 1);
-        MatrixCursor.RowBuilder builder = matrixCursor.newRow();
-        builder.add(value);
+    private <T> TableResultSet preferenceToCursor(T value) {
+        TableResultSet matrixCursor = new TableResultSet(preferencecolumns, 1);
+        ohos.data.resultset.TableResultSet.RowBuilder builder = matrixCursor.addRowByBuilder();
+        builder.setColumnValue(value);
         return matrixCursor;
     }
 
-    private void persistInt(String name, ContentValues values) {
+    private void persistInt(String name, ValuesBucket values) {
         if (values == null) {
-            throw new IllegalArgumentException(" values is null!!!");
+            throw new IllegalArgumentException(ACTION);
         }
-        String kInteger = values.getAsString(PREF_KEY);
-        int vInteger = values.getAsInteger(PREF_VALUE);
-        getDPreference(name).setPrefInt(kInteger, vInteger);
+        String kinteger = values.getString(PREF_KEY);
+        int vinteger = values.getInteger(PREF_VALUE);
+        getDPreference(name).setPrefInt(kinteger, vinteger);
     }
 
-    private void persistBoolean(String name, ContentValues values) {
+    private void persistBoolean(String name, ValuesBucket values) {
         if (values == null) {
-            throw new IllegalArgumentException(" values is null!!!");
+            throw new IllegalArgumentException(ACTION);
         }
-        String kBoolean = values.getAsString(PREF_KEY);
-        boolean vBoolean = values.getAsBoolean(PREF_VALUE);
-        getDPreference(name).setPrefBoolean(kBoolean, vBoolean);
+        String kboolean = values.getString(PREF_KEY);
+        boolean vboolean = values.getBoolean(PREF_VALUE);
+        getDPreference(name).setPrefBoolean(kboolean, vboolean);
     }
 
-    private void persistLong(String name, ContentValues values) {
+    private void persistLong(String name, ValuesBucket values) {
         if (values == null) {
-            throw new IllegalArgumentException(" values is null!!!");
+            throw new IllegalArgumentException(ACTION);
         }
-        String kLong = values.getAsString(PREF_KEY);
-        long vLong = values.getAsLong(PREF_VALUE);
-        getDPreference(name).setPrefLong(kLong, vLong);
+        String klong = values.getString(PREF_KEY);
+        long vlong = values.getLong(PREF_VALUE);
+        getDPreference(name).setPrefLong(klong, vlong);
     }
 
-    private void persistString(String name, ContentValues values) {
+    private void persistString(String name, ValuesBucket values) {
         if (values == null) {
-            throw new IllegalArgumentException(" values is null!!!");
+            throw new IllegalArgumentException(ACTION);
         }
-        String kString = values.getAsString(PREF_KEY);
-        String vString = values.getAsString(PREF_VALUE);
-        getDPreference(name).setPrefString(kString, vString);
+        String kstring = values.getString(PREF_KEY);
+        String vstring = values.getString(PREF_VALUE);
+        getDPreference(name).setPrefString(kstring, vstring);
     }
 
-    private static Map<String, IPrefImpl> sPreferences = new ArrayMap<>();
+    private static Map<String, IPrefImpl> sPreferences = new LightweightMap();
 
     private IPrefImpl getDPreference(String name) {
-        if (TextUtils.isEmpty(name)) {
+        if (TextTool.isNullOrEmpty(name)) {
             throw new IllegalArgumentException("getDPreference name is null!!!");
         }
         if (sPreferences.get(name) == null) {
@@ -197,17 +216,21 @@ public class PreferenceProvider extends ContentProvider {
     }
 
     private PrefModel getPrefModelByUri(Uri uri) {
-        if (uri == null || uri.getPathSegments().size() != 3) {
+        if (uri == null) {
+            throw new IllegalArgumentException("getPrefModelByUri uri is null : " + uri);
+        }
+        HiLog.debug(HI_LOG_LABEL, "PreferenceProvider", "" + uri.getDecodedPathList().size());
+        uri.getDecodedPathList().forEach(u -> HiLog.debug(HI_LOG_LABEL, "PreferenceProvider", "item: " + u));
+        if (uri.getDecodedPathList().size() != 4) {
             throw new IllegalArgumentException("getPrefModelByUri uri is wrong : " + uri);
         }
-        String name = uri.getPathSegments().get(1);
-        String key = uri.getPathSegments().get(2);
+        String name = uri.getDecodedPathList().get(2);
+        String key = uri.getDecodedPathList().get(3);
         return new PrefModel(name, key);
     }
 
-
     public static Uri buildUri(String name, String key, int type) {
-        return Uri.parse(getUriByType(type) + name + "/" + key);
+        return ohos.utils.net.Uri.parse(getUriByType(type) + name + "/" + key);
     }
 
     private static String getUriByType(int type) {
@@ -220,13 +243,14 @@ public class PreferenceProvider extends ContentProvider {
                 return PreferenceProvider.CONTENT_PREF_LONG_URI;
             case PreferenceProvider.PREF_STRING:
                 return PreferenceProvider.CONTENT_PREF_STRING_URI;
+            default:
+                //do nothing
         }
         throw new IllegalStateException("unsupport preftype : " + type);
     }
 
     private static class PrefModel {
         String name;
-
         String key;
 
         public PrefModel(String name, String key) {
@@ -243,4 +267,7 @@ public class PreferenceProvider extends ContentProvider {
         }
     }
 
+    public static String changeParamToPath(ohos.utils.net.Uri hmosUri) {
+        return String.valueOf(hmosUri);
+    }
 }
