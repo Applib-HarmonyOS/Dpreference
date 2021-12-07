@@ -23,10 +23,18 @@ Inspired by [Dozen Wang/DPreference](https://github.com/DozenWang/DPreference)
 ```
 2. For using dpreference in separate application using har file, add the har file in the entry/libs folder and add the dependencies in entry/build.gradle file.
 ```groovy
-	dependencies {
-		implementation fileTree(dir: 'libs', include: ['*.har'])
-		testImplementation 'junit:junit:4.13'
-	}
+    dependencies {
+        implementation fileTree(dir: 'libs', include: ['*.har'])
+        testImplementation 'junit:junit:4.13'
+    }
+```
+
+3. For using dpreference from a remote repository in separate application, add the below dependencies in entry/build.gradle file.
+```groovy
+    dependencies {
+        implementation 'dev.applibgroup:dpreference:1.0.0'
+        testImplementation 'junit:junit:4.13'
+    }
 ```
 
 ## Usage
